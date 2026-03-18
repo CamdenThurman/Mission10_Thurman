@@ -1,0 +1,15 @@
+@page
+@model Mission10_Thurman.Pages.Bowlers.IndexModel
+
+@{
+    ViewData["Title"] = "Bowlers";
+}
+
+@* Heading component (no outer container) *@
+<partial name="_Heading" />
+
+<div class="card mb-4">
+    <div class="card-body">
+        <partial name="_BowlerTable" model="Model.Bowlers" />
+    </div>
+</div>

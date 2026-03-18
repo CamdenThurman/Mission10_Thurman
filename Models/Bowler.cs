@@ -8,7 +8,7 @@ namespace Mission10_Thurman.Models
         public int BowlerID { get; set; }
 
         public string BowlerFirstName { get; set; }
-        public string BowlerMiddleInit { get; set; }
+        public string? BowlerMiddleInit { get; set; }
         public string BowlerLastName { get; set; }
 
         public string BowlerAddress { get; set; }

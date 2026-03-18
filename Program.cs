@@ -9,7 +9,7 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<BowlingContext>(options =>
-    options.UseSqlite("Data Source=bowlingleague.sqlite"));
+    options.UseSqlite("Data Source=BowlingLeague.sqlite"));
 
 builder.Services.AddCors(options =>
 {

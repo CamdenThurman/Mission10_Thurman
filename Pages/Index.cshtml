@@ -1,10 +1,140 @@
-﻿@page
+@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Bowlers React App";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div id="root">
+    <!-- Fallback content while React is loading -->
+    <div class="py-4 text-center text-muted">
+        Loading bowlers directory...
+    </div>
 </div>
+
+@section Scripts {
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom-client.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <script type="text/babel">
+        const { useEffect, useState } = React;
+
+        function Heading() {
+            return (
+                <header className="mb-4 text-center">
+                    <h1 className="display-5">Bowlers Directory</h1>
+                    <p className="text-muted mb-0">
+                        Showing bowlers who are members of the Marlins or Sharks teams.
+                    </p>
+                </header>
+            );
+        }
+
+        function BowlerTable({ bowlers, loading, error }) {
+            if (loading) {
+                return (
+                    <div className="text-center py-4">
+                        <div className="spinner-border text-primary" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (error) {
+                return (
+                    <div className="alert alert-danger" role="alert">
+                        {error}
+                    </div>
+                );
+            }
+
+            if (!bowlers || bowlers.length === 0) {
+                return (
+                    <div className="alert alert-info" role="alert">
+                        No bowlers found for the Marlins or Sharks teams.
+                    </div>
+                );
+            }
+
+            return (
+                <div className="table-responsive">
+                    <table className="table table-striped table-hover mb-0">
+                        <thead className="table-light">
+                            <tr>
+                                <th scope="col">Bowler Name</th>
+                                <th scope="col">Team</th>
+                                <th scope="col">Address</th>
+                                <th scope="col">City</th>
+                                <th scope="col">State</th>
+                                <th scope="col">Zip</th>
+                                <th scope="col">Phone</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {bowlers.map((b, idx) => (
+                                <tr key={idx}>
+                                    <td>
+                                        {b.firstName}
+                                        {b.middle && ` ${b.middle}.`}{" "}
+                                        {b.lastName}
+                                    </td>
+                                    <td>{b.team}</td>
+                                    <td>{b.address}</td>
+                                    <td>{b.city}</td>
+                                    <td>{b.state}</td>
+                                    <td>{b.zip}</td>
+                                    <td>{b.phone}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            );
+        }
+
+        function App() {
+            const [bowlers, setBowlers] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [error, setError] = useState(null);
+
+            useEffect(() => {
+                async function loadBowlers() {
+                    try {
+                        setLoading(true);
+                        setError(null);
+                        const response = await fetch("/api/bowlers");
+
+                        if (!response.ok) {
+                            throw new Error(`Failed to load bowlers (status ${response.status})`);
+                        }
+
+                        const data = await response.json();
+                        setBowlers(data);
+                    } catch (err) {
+                        setError(err.message ?? "An unexpected error occurred while loading bowlers.");
+                    } finally {
+                        setLoading(false);
+                    }
+                }
+
+                loadBowlers();
+            }, []);
+
+            return (
+                <div className="container py-4">
+                    <Heading />
+                    <div className="card">
+                        <div className="card-body">
+                            <BowlerTable bowlers={bowlers} loading={loading} error={error} />
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        const container = document.getElementById("root");
+        const root = ReactDOMClient.createRoot(container);
+        root.render(<App />);
+    </script>
+}
